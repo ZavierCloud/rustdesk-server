@@ -154,6 +154,15 @@ impl RendezvousServer {
         log::info!("mask: {:?}", rs.inner.mask);
         log::info!("local-ip: {:?}", rs.inner.local_ip);
         std::env::set_var("PORT_FOR_API", port.to_string());
+        {
+            let api_db = rs.pm.db.clone();
+            let api_port = port - 2;
+            tokio::spawn(async move {
+                if let Err(err) = crate::api::start(api_db, bind_addr, api_port).await {
+                    log::error!("API server exited: {}", err);
+                }
+            });
+        }
         rs.parse_relay_servers(&get_arg("relay-servers"));
         let mut listener = create_tcp_listener(bind_addr, port).await?;
         let mut listener2 = create_tcp_listener(bind_addr, nat_port).await?;
@@ -738,12 +747,12 @@ impl RendezvousServer {
             }
             
             // record punch hole request (from addr -> peer id/peer_addr)
+            let mut dup = false;
             {
                 let from_ip = try_into_v4(addr).ip().to_string();
                 let to_ip = try_into_v4(peer_addr).ip().to_string();
                 let to_id_clone = id.clone();
                 let mut lock = PUNCH_REQS.lock().await;
-                let mut dup = false;
                 for e in lock.iter().rev().take(30) { // only check recent tail subset for speed
                     if e.from_ip == from_ip && e.to_id == to_id_clone {
                         if e.tm.elapsed().as_secs() < PUNCH_REQ_DEDUPE_SEC { dup = true; }
@@ -751,6 +760,21 @@ impl RendezvousServer {
                     }
                 }
                 if !dup { lock.push(PunchReqEntry { tm: Instant::now(), from_ip, to_ip, to_id: to_id_clone }); }
+            }
+            if !dup {
+                let detail = format!("to {}", try_into_v4(peer_addr).ip());
+                let _ = self
+                    .pm
+                    .db
+                    .insert_audit(
+                        "connect",
+                        None,
+                        None,
+                        Some(&id),
+                        Some(&try_into_v4(addr).ip().to_string()),
+                        Some(&detail),
+                    )
+                    .await;
             }
 
             let mut msg_out = RendezvousMessage::new();
@@ -1227,6 +1251,18 @@ impl RendezvousServer {
             self.tcp_punch.lock().await.remove(&try_into_v4(addr));
         }
         log::debug!("Tcp connection from {:?} closed", addr);
+        let _ = self
+            .pm
+            .db
+            .insert_audit(
+                "disconnect",
+                None,
+                None,
+                None,
+                Some(&try_into_v4(addr).ip().to_string()),
+                None,
+            )
+            .await;
         Ok(())
     }
 
