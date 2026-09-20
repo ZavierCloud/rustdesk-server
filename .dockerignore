@@ -1,0 +1,9 @@
+target
+out
+console/node_modules
+console/dist
+.git
+.github
+*.sqlite3
+id_ed25519
+id_ed25519.pub

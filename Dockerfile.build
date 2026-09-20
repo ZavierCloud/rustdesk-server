@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+#
+# Cross-builds hbbs/hbbr + the console bundle for linux/amd64.
+#
+# The build stage is based on CentOS Stream 9 so the resulting binaries link
+# against glibc 2.34, matching a CentOS Stream 9 server (building on a newer
+# distro would produce "GLIBC_2.35 not found").
+#
+# On Apple Silicon (or any non-amd64 host) build with:
+#   docker buildx build --platform linux/amd64 \
+#     --target export --output type=local,dest=./out -f Dockerfile.build .
+#
+FROM --platform=linux/amd64 quay.io/centos/centos:stream9 AS build
+RUN dnf install -y gcc gcc-c++ cmake make perl git curl which sqlite && dnf clean all
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+ENV PATH="/root/.cargo/bin:$PATH"
+WORKDIR /src
+COPY . .
+# db_v2.sqlite3 is gitignored, but the sqlx compile-time macros need a database
+# whose schema contains the `peer` table.
+RUN sqlite3 db_v2.sqlite3 "create table if not exists peer (guid blob primary key not null, id varchar(100) not null, uuid blob not null, pk blob not null, created_at datetime not null default(current_timestamp), user blob, status tinyint, note varchar(300), info text not null);"
+RUN cargo build --release --locked
+
+FROM --platform=linux/amd64 node:20-bookworm AS web
+WORKDIR /web
+COPY console/package*.json ./
+RUN npm ci
+COPY console/ .
+RUN npm run build
+
+FROM --platform=linux/amd64 scratch AS export
+COPY --from=build /src/target/release/hbbs /hbbs
+COPY --from=build /src/target/release/hbbr /hbbr
+COPY --from=web /web/dist /console/dist

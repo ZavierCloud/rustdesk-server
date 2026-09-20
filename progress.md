@@ -20,7 +20,8 @@
 
 - [x] 前端联调（Playwright 实测）：登录 / 概览 / 设备 / 用户管理 / 策略设置 / 审计日志 / 个人 2FA 页均正常渲染；设置与用户表单新增落库并刷新可见；零 console 错误、零失败请求
 - [x] 审计埋点实测：连接 rendezvous 端口 21116 后 `/api/audit` 出现 `disconnect` 记录（ip 127.0.0.1）
-- [ ] 生产部署：`console/dist` 被 `.gitignore` 忽略，部署前需在 `console/` 执行 `npm run build`
+- [x] 生产构建方案：`Dockerfile.build` + `.dockerignore`（CentOS Stream 9 基础镜像，产出 linux/amd64 的 `hbbs`/`hbbr` 与 `console/dist`，规避 glibc 2.34 与 sqlx 编译期 DB 两个坑）
+- [ ] 部署文档：systemd 单元、nginx 反代、firewalld 端口（21114–21118）整理成文
 - [ ] P2 通讯录、P3 权限（本期未做）
 
 ## 构建环境
