@@ -1,36 +1,38 @@
 version: '3'
 
 networks:
-  rustdesk-net:
+  rd_server-net:
     external: false
 
 services:
-  hbbs:
-    container_name: hbbs
+  rd_server_id:
+    container_name: rd_server_id
     ports:
-      - 21115:21115
-      - 21116:21116
-      - 21116:21116/udp
-      - 21118:21118
-    image: rustdesk/rustdesk-server:latest
-    command: hbbs -r rustdesk.example.com:21117
+      - 21125:21125
+      - 21126:21126
+      - 21126:21126/udp
+      - 21128:21128
+    image: rd_server:latest
+    build: .
+    command: rd_server_id -r net.spidercloude.com:21127
     volumes:
       - ./data:/root
     networks:
-      - rustdesk-net
+      - rd_server-net
     depends_on:
-      - hbbr
+      - rd_server_relay
     restart: unless-stopped
 
-  hbbr:
-    container_name: hbbr
+  rd_server_relay:
+    container_name: rd_server_relay
     ports:
-      - 21117:21117
-      - 21119:21119
-    image: rustdesk/rustdesk-server:latest
-    command: hbbr
+      - 21127:21127
+      - 21129:21129
+    image: rd_server:latest
+    build: .
+    command: rd_server_relay
     volumes:
       - ./data:/root
     networks:
-      - rustdesk-net
+      - rd_server-net
     restart: unless-stopped

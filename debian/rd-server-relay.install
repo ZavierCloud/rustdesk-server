@@ -1,0 +1,2 @@
+bin/rd_server_relay usr/bin
+systemd/rd_server-rd_server_relay.service lib/systemd/system

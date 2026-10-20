@@ -89,7 +89,7 @@ export default function AppLayout() {
             letterSpacing: 1,
           }}
         >
-          RustDesk 控制台
+          RD Server 控制台
         </div>
         <Menu
           theme="dark"

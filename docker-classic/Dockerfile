@@ -1,5 +1,5 @@
 FROM scratch
-COPY hbbs /usr/bin/hbbs
-COPY hbbr /usr/bin/hbbr
+COPY rd_server_id /usr/bin/rd_server_id
+COPY rd_server_relay /usr/bin/rd_server_relay
 WORKDIR /root
 ENV HOME=/root

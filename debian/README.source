@@ -10,7 +10,7 @@
 #
 #   debuild -uc -us
 #
-# in the directory  target/rustdesk-server
+# in the directory  target/rd_server
 #
 # The instructions are written in bash syntax,
 #
@@ -22,8 +22,8 @@
 # Make sure the submodules are present
 git submodule update --init --recursive
 
-rm -rf target/rustdesk-server  # avoid clutter from previous iteration
-mkdir -p target/rustdesk-server #  FYI: target/ is ignored by git
+rm -rf target/rd_server  # avoid clutter from previous iteration
+mkdir -p target/rd_server #  FYI: target/ is ignored by git
 
 tar cf - \
     --exclude .git \
@@ -34,23 +34,23 @@ tar cf - \
 	debian \
 	libs rcd src \
     systemd ui \
-| ( cd target/rustdesk-server && tar x )
+| ( cd target/rd_server && tar x )
 
-mv target/rustdesk-server/debian/Makefile target/rustdesk-server/
+mv target/rd_server/debian/Makefile target/rd_server/
 
-tar cjf target/rustdesk-server-orig.tar.xz \
+tar cjf target/rd_server-orig.tar.xz \
     --strip-components=1 \
-    target/rustdesk-server
+    target/rd_server
 
 # an .orig.tar.xz tarball exists, 
 # work on the debian directory 
 
 eval $( dpkg-architecture )
 sed -e "s/{{ ARCH }}/${DEB_TARGET_ARCH}/" \
-    debian/control.tpl > target/rustdesk-server/debian/control
+    debian/control.tpl > target/rd_server/debian/control
     
 
-cd target/rustdesk-server
+cd target/rd_server
 dpkg-checkbuilddeps || echo sudo apt install dpkg-dev
 debuild -uc -us
 

@@ -11,7 +11,7 @@ use super::models::{ApiError, UserPayload};
 use super::AppState;
 use crate::database::{Audit, PeerRow, Setting};
 
-const ISSUER: &str = "RustDesk Server";
+const ISSUER: &str = "RD Server";
 const AUDIT_LIMIT_DEFAULT: i64 = 200;
 const AUDIT_LIMIT_MAX: i64 = 1000;
 

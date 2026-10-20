@@ -79,7 +79,7 @@ export default function Login() {
       <Card style={{ width: 380 }} bordered={false}>
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           <Typography.Title level={3} style={{ marginBottom: 4 }}>
-            RustDesk 控制台
+            RD Server 控制台
           </Typography.Title>
           <Typography.Text type="secondary">
             {tfaUsername ? '二次验证' : '请登录以继续'}

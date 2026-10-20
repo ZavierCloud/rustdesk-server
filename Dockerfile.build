@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Cross-builds hbbs/hbbr + the console bundle for linux/amd64.
+# Cross-builds rd_server_id/rd_server_relay + the console bundle for linux/amd64.
 #
 # The build stage is based on CentOS Stream 9 so the resulting binaries link
 # against glibc 2.34, matching a CentOS Stream 9 server (building on a newer
@@ -11,7 +11,7 @@
 #     --target export --output type=local,dest=./out -f Dockerfile.build .
 #
 FROM --platform=linux/amd64 quay.io/centos/centos:stream9 AS build
-RUN dnf install -y gcc gcc-c++ cmake make perl git curl which sqlite && dnf clean all
+RUN dnf install -y --allowerasing gcc gcc-c++ cmake make perl git curl which sqlite openssl-devel && dnf clean all
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
 ENV PATH="/root/.cargo/bin:$PATH"
 WORKDIR /src
@@ -29,6 +29,6 @@ COPY console/ .
 RUN npm run build
 
 FROM --platform=linux/amd64 scratch AS export
-COPY --from=build /src/target/release/hbbs /hbbs
-COPY --from=build /src/target/release/hbbr /hbbr
+COPY --from=build /src/target/release/rd_server_id /rd_server_id
+COPY --from=build /src/target/release/rd_server_relay /rd_server_relay
 COPY --from=web /web/dist /console/dist

@@ -120,7 +120,7 @@ pub fn set_arg(name: &str, value: &str) {
 pub fn init_args(args: &str, name: &str, about: &str) {
     let matches = App::new(name)
         .version(crate::version::VERSION)
-        .author("Purslane Ltd. <info@rustdesk.com>")
+        .author("ZavierCloud <dev@spidercloude.com>")
         .about(about)
         .args_from_usage(args)
         .get_matches();
@@ -289,8 +289,10 @@ pub fn check_software_update() {
 
 #[tokio::main(flavor = "current_thread")]
 async fn check_software_update_() -> hbb_common::ResultType<()> {
-    let (request, url) = hbb_common::version_check_request(hbb_common::VER_TYPE_RUSTDESK_SERVER.to_string());
-    let latest_release_response = reqwest::Client::builder().build()?
+    let (request, url) =
+        hbb_common::version_check_request(hbb_common::VER_TYPE_RUSTDESK_SERVER.to_string());
+    let latest_release_response = reqwest::Client::builder()
+        .build()?
         .post(url)
         .json(&request)
         .send()
@@ -314,30 +316,27 @@ mod tests {
     #[test]
     fn argument_names_ignore_case_and_separator() {
         let aliases = [
-            "RUSTDESK-CONFIG-ALIAS-TEST",
-            "RUSTDESK_CONFIG_ALIAS_TEST",
-            "rustdesk-config-alias-test",
-            "rustdesk_config_alias_test",
-            "RustDesk_Config-Alias_Test",
+            "RD-CONFIG-ALIAS-TEST",
+            "RD_CONFIG_ALIAS_TEST",
+            "rd-config-alias-test",
+            "rd_config_alias_test",
+            "RD_Config-Alias_Test",
         ];
         for alias in aliases {
             std::env::remove_var(alias);
         }
         for alias in aliases {
             std::env::set_var(alias, alias);
-            assert_eq!(get_arg("RUSTDESK_CONFIG_ALIAS_TEST"), alias);
+            assert_eq!(get_arg("RD_CONFIG_ALIAS_TEST"), alias);
             std::env::remove_var(alias);
         }
-        set_arg("rustdesk_config_alias_test", "normalized");
-        assert_eq!(
-            std::env::var("RUSTDESK-CONFIG-ALIAS-TEST").unwrap(),
-            "normalized"
-        );
-        std::env::set_var("RUSTDESK_CONFIG_ALIAS_TEST", "inherited");
-        set_arg("rustdesk-config-alias-test", "higher-priority");
-        assert_eq!(get_arg("rustdesk_config_alias_test"), "higher-priority");
-        std::env::remove_var("RUSTDESK-CONFIG-ALIAS-TEST");
-        std::env::remove_var("RUSTDESK_CONFIG_ALIAS_TEST");
+        set_arg("rd_config_alias_test", "normalized");
+        assert_eq!(std::env::var("RD-CONFIG-ALIAS-TEST").unwrap(), "normalized");
+        std::env::set_var("RD_CONFIG_ALIAS_TEST", "inherited");
+        set_arg("rd-config-alias-test", "higher-priority");
+        assert_eq!(get_arg("rd_config_alias_test"), "higher-priority");
+        std::env::remove_var("RD-CONFIG-ALIAS-TEST");
+        std::env::remove_var("RD_CONFIG_ALIAS_TEST");
     }
 
     #[test]
@@ -369,7 +368,7 @@ mod tests {
             Some(IpAddr::V6(Ipv6Addr::UNSPECIFIED)),
             Some(IpAddr::V4(Ipv4Addr::LOCALHOST)),
         ] {
-            assert_eq!(console_addr(bind_addr, 21117), None);
+            assert_eq!(console_addr(bind_addr, 21127), None);
         }
         for bind_addr in [
             Some(IpAddr::V4(Ipv4Addr::new(192, 0, 2, 1))),
@@ -377,8 +376,8 @@ mod tests {
             Some(IpAddr::V6(Ipv6Addr::LOCALHOST)),
         ] {
             assert_eq!(
-                console_addr(bind_addr, 21117),
-                Some(SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), 21117))
+                console_addr(bind_addr, 21127),
+                Some(SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), 21127))
             );
         }
     }

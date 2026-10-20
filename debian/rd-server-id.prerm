@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-SERVICE=rustdesk-hbbs.service
+SERVICE=rd_server-rd_server_id.service
 
 case "$1" in
     remove|deconfigure)

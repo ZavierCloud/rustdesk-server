@@ -1,15 +1,15 @@
 #!/bin/sh
 set -e
 
-SERVICE=rustdesk-hbbs.service
+SERVICE=rd_server-rd_server_relay.service
 
 if [ "$1" = "configure" ]; then
-    mkdir -p /var/log/rustdesk-server
+    mkdir -p /var/log/rd_server
 fi
 
 case "$1" in
     configure|abort-upgrade|abort-deconfigure|abort-remove)
-      mkdir -p /var/lib/rustdesk-server/
+      mkdir -p /var/lib/rd_server/
 	  deb-systemd-helper unmask "${SERVICE}" >/dev/null || true
 	  if deb-systemd-helper --quiet was-enabled "${SERVICE}"; then
 	  	deb-systemd-invoke enable "${SERVICE}" >/dev/null || true

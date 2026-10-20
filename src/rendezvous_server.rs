@@ -174,7 +174,7 @@ impl RendezvousServer {
             listener2.local_addr()?
         );
         log::info!("Listening on websocket {}", listener3.local_addr()?);
-        let test_addr = get_arg("TEST_HBBS");
+        let test_addr = get_arg("TEST_RD_SERVER");
         if get_arg("ALWAYS_USE_RELAY").to_uppercase() == "Y" {
             ALWAYS_USE_RELAY.store(true, Ordering::SeqCst);
         }
@@ -193,16 +193,16 @@ impl RendezvousServer {
                 test_addr.parse()?
             };
             tokio::spawn(async move {
-                if let Err(err) = test_hbbs(test_addr).await {
+                if let Err(err) = test_rd_server_id(test_addr).await {
                     if test_addr.is_ipv6() && test_addr.ip().is_unspecified() {
                         let mut test_addr = test_addr;
                         test_addr.set_ip(IpAddr::V4(Ipv4Addr::UNSPECIFIED));
-                        if let Err(err) = test_hbbs(test_addr).await {
-                            log::error!("Failed to run hbbs test with {test_addr}: {err}");
+                        if let Err(err) = test_rd_server_id(test_addr).await {
+                            log::error!("Failed to run rd_server_id test with {test_addr}: {err}");
                             std::process::exit(1);
                         }
                     } else {
-                        log::error!("Failed to run hbbs test with {test_addr}: {err}");
+                        log::error!("Failed to run rd_server_id test with {test_addr}: {err}");
                         std::process::exit(1);
                     }
                 }
@@ -1366,7 +1366,7 @@ async fn check_relay_servers(rs0: Arc<RelayServers>, tx: Sender) {
 }
 
 // temp solution to solve udp socket failure
-async fn test_hbbs(addr: SocketAddr) -> ResultType<()> {
+async fn test_rd_server_id(addr: SocketAddr) -> ResultType<()> {
     let mut addr = addr;
     if addr.ip().is_unspecified() {
         addr.set_ip(if addr.is_ipv4() {
@@ -1379,7 +1379,7 @@ async fn test_hbbs(addr: SocketAddr) -> ResultType<()> {
     let mut socket = FramedSocket::new(config::Config::get_any_listen_addr(addr.is_ipv4())).await?;
     let mut msg_out = RendezvousMessage::new();
     msg_out.set_register_peer(RegisterPeer {
-        id: "(:test_hbbs:)".to_owned(),
+        id: "(:test_rd_server_id:)".to_owned(),
         ..Default::default()
     });
     let mut last_time_recv = Instant::now();
@@ -1389,13 +1389,13 @@ async fn test_hbbs(addr: SocketAddr) -> ResultType<()> {
         tokio::select! {
           _ = timer.tick() => {
               if last_time_recv.elapsed().as_secs() > 12 {
-                  bail!("Timeout of test_hbbs");
+                  bail!("Timeout of test_rd_server_id");
               }
               socket.send(&msg_out, addr).await?;
           }
           Some(Ok((bytes, _))) = socket.next() => {
               if let Ok(msg_in) = RendezvousMessage::parse_from_bytes(&bytes) {
-                 log::trace!("Recv {:?} of test_hbbs", msg_in);
+                 log::trace!("Recv {:?} of test_rd_server_id", msg_in);
                  last_time_recv = Instant::now();
               }
           }

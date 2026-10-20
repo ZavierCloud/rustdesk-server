@@ -1,27 +1,27 @@
-Source: rustdesk-server
+Source: rd_server
 Section: net
 Priority: optional
-Maintainer: open-trade <info@rustdesk.com>
+Maintainer: open-trade <info@rd_server.com>
 Build-Depends: debhelper (>= 10), pkg-config
 Standards-Version: 4.5.0
-Homepage: https://rustdesk.com/
+Homepage: https://rd_server.com/
 
-Package: rustdesk-server-hbbs
+Package: rd_server-rd_server_id
 Architecture: {{ ARCH }}
 Depends: systemd ${misc:Depends}
-Description: RustDesk server
- Self-host your own RustDesk server, it is free and open source.
+Description: RD Server server
+ Self-host your own RD Server server, it is free and open source.
 
-Package: rustdesk-server-hbbr
+Package: rd_server-rd_server_relay
 Architecture: {{ ARCH }}
 Depends: systemd ${misc:Depends}
-Description: RustDesk server
- Self-host your own RustDesk server, it is free and open source.
- This package contains the RustDesk relay server.
+Description: RD Server server
+ Self-host your own RD Server server, it is free and open source.
+ This package contains the RD Server relay server.
 
-Package: rustdesk-server-utils
+Package: rd_server-utils
 Architecture: {{ ARCH }}
 Depends: ${misc:Depends}
-Description: RustDesk server
- Self-host your own RustDesk server, it is free and open source.
- This package contains the rustdesk-utils binary.
+Description: RD Server server
+ Self-host your own RD Server server, it is free and open source.
+ This package contains the rd_server_utils binary.

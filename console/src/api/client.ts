@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 
-export const TOKEN_KEY = 'rustdesk_console_token'
+export const TOKEN_KEY = 'rd_server_console_token'
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY)

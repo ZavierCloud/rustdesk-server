@@ -1,0 +1,2 @@
+bin/rd_server_id usr/bin
+systemd/rd_server-rd_server_id.service lib/systemd/system

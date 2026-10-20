@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# PROVIDE: rd_server_rd_server_relay
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# rd_server_rd_server_relay_enable (bool):            Set to NO by default.
+#               Set it to YES to enable rd_server_rd_server_relay.
+# rd_server_rd_server_relay_args (string):            Set extra arguments to pass to rd_server_rd_server_relay
+#               Default is "-k _".
+# rd_server_rd_server_relay_user (string):            Set user that rd_server_rd_server_relay will run under
+#               Default is "root".
+# rd_server_rd_server_relay_group (string):           Set group that rd_server_rd_server_relay will run under
+#               Default is "wheel".
+
+. /etc/rc.subr
+
+name=rd_server_rd_server_relay
+desc="RD Server Relay Server"
+rcvar=rd_server_rd_server_relay_enable
+
+load_rc_config $name
+
+: ${rd_server_rd_server_relay_enable:=NO}
+: ${rd_server_rd_server_relay_args="-k _"}
+: ${rd_server_rd_server_relay_user:=rd_server}
+: ${rd_server_rd_server_relay_group:=rd_server}
+
+pidfile=/var/run/rd_server_rd_server_relay.pid
+command=/usr/sbin/daemon
+procname=/usr/local/sbin/rd_server_relay
+rd_server_rd_server_relay_chdir=/var/db/rd_server
+command_args="-p ${pidfile} -o /var/log/rd_server-rd_server_relay.log ${procname} ${rd_server_rd_server_relay_args}"
+## If you want the daemon do its log over syslog comment out the above line and remove the comment from the below replacement
+#command_args="-p ${pidfile} -T ${name} ${procname} ${rd_server_rd_server_relay_args}"
+
+start_precmd=rd_server_rd_server_relay_startprecmd
+
+rd_server_rd_server_relay_startprecmd()
+{
+    if [ -e ${pidfile} ]; then
+        chown ${rd_server_rd_server_relay_user}:${rd_server_rd_server_relay_group} ${pidfile};
+    else
+        install -o ${rd_server_rd_server_relay_user} -g ${rd_server_rd_server_relay_group} /dev/null ${pidfile};
+    fi
+    if [ -e ${rd_server_rd_server_relay_chdir} ]; then
+        chown -R ${rd_server_rd_server_relay_user}:${rd_server_rd_server_relay_group} ${rd_server_rd_server_relay_chdir};
+        chmod -R 770 ${rd_server_rd_server_relay_chdir};
+    else
+        mkdir -m 770 ${rd_server_rd_server_relay_chdir};
+        chown ${rd_server_rd_server_relay_user}:${rd_server_rd_server_relay_group} ${rd_server_rd_server_relay_chdir};
+    fi
+    if [ -e /var/log/rd_server-rd_server_relay.log ]; then
+        chown -R ${rd_server_rd_server_relay_user}:${rd_server_rd_server_relay_group} /var/log/rd_server-rd_server_relay.log;
+        chmod 660 /var/log/rd_server-rd_server_relay.log;
+    else
+        install -o ${rd_server_rd_server_relay_user} -g ${rd_server_rd_server_relay_group} /dev/null /var/log/rd_server-rd_server_relay.log;
+        chmod 660 /var/log/rd_server-rd_server_relay.log;
+    fi
+}
+
+run_rc_command "$1"

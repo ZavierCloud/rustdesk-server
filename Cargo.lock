@@ -1690,49 +1690,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "hbbs"
-version = "1.1.17"
-dependencies = [
- "async-speed-limit",
- "async-trait",
- "axum",
- "base64 0.13.0",
- "bcrypt",
- "chrono",
- "clap 2.34.0",
- "deadpool",
- "dns-lookup",
- "flate2",
- "flexi_logger 0.22.3",
- "hbb_common",
- "headers",
- "http 0.2.7",
- "ipnetwork",
- "jsonwebtoken",
- "lazy_static",
- "local-ip-address",
- "mac_address",
- "machine-uid 0.2.0",
- "minreq",
- "once_cell",
- "ping",
- "regex",
- "reqwest",
- "rust-ini",
- "serde",
- "serde_derive",
- "serde_json",
- "sodiumoxide",
- "sqlx",
- "tokio-tungstenite 0.17.1",
- "totp-rs",
- "tower-http",
- "tungstenite 0.17.2",
- "uuid",
- "whoami",
-]
-
-[[package]]
 name = "headers"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3235,6 +3192,49 @@ dependencies = [
  "time",
  "x509-parser",
  "yasna",
+]
+
+[[package]]
+name = "rd_server"
+version = "1.1.17"
+dependencies = [
+ "async-speed-limit",
+ "async-trait",
+ "axum",
+ "base64 0.13.0",
+ "bcrypt",
+ "chrono",
+ "clap 2.34.0",
+ "deadpool",
+ "dns-lookup",
+ "flate2",
+ "flexi_logger 0.22.3",
+ "hbb_common",
+ "headers",
+ "http 0.2.7",
+ "ipnetwork",
+ "jsonwebtoken",
+ "lazy_static",
+ "local-ip-address",
+ "mac_address",
+ "machine-uid 0.2.0",
+ "minreq",
+ "once_cell",
+ "ping",
+ "regex",
+ "reqwest",
+ "rust-ini",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "sodiumoxide",
+ "sqlx",
+ "tokio-tungstenite 0.17.1",
+ "totp-rs",
+ "tower-http",
+ "tungstenite 0.17.2",
+ "uuid",
+ "whoami",
 ]
 
 [[package]]
